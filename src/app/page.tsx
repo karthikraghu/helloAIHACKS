@@ -1,65 +1,153 @@
-import Image from "next/image";
+import {
+  BrutalCard,
+  YellowCard,
+  PinkCard,
+  BlueCard,
+  GreenCard,
+  FeatureCard,
+  StatCard,
+  BrutalButton,
+  YellowButton,
+  PinkButton,
+  BlueButton,
+  BlackButton,
+} from "@/components/ui";
 
 export default function Home() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+    <main className="min-h-screen bg-brutal-cream p-8">
+      {/* Hero Section */}
+      <section className="max-w-6xl mx-auto mb-16">
+        <div className="border-2 border-black bg-brutal-yellow p-8 shadow-brutal-xl mb-8">
+          <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tight mb-4">
+            Neo-Brutalism
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+          <p className="text-xl md:text-2xl font-bold mb-6">
+            Bold. Unapologetic. Retro-futuristic design for the modern web.
           </p>
+          <div className="flex flex-wrap gap-4">
+            <BlackButton iconName="rocket" size="lg">
+              Get Started
+            </BlackButton>
+            <BrutalButton variant="white" iconName="arrowRight" iconPosition="right">
+              Learn More
+            </BrutalButton>
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+      </section>
+
+      {/* Stats Section */}
+      <section className="max-w-6xl mx-auto mb-16">
+        <h2 className="text-3xl font-black uppercase mb-6 border-b-4 border-black pb-2">
+          Dashboard Stats
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <StatCard
+            value="2,847"
+            label="Total Users"
+            iconName="users"
+            variant="yellow"
+            trend={{ value: 12.5, isPositive: true }}
+          />
+          <StatCard
+            value="$45.2K"
+            label="Revenue"
+            iconName="trendingUp"
+            variant="pink"
+            trend={{ value: 8.2, isPositive: true }}
+          />
+          <StatCard
+            value="156"
+            label="Active Projects"
+            iconName="star"
+            variant="blue"
+          />
+          <StatCard
+            value="99.9%"
+            label="Uptime"
+            iconName="zap"
+            variant="green"
+          />
         </div>
-      </main>
-    </div>
+      </section>
+
+      {/* Feature Cards */}
+      <section className="max-w-6xl mx-auto mb-16">
+        <h2 className="text-3xl font-black uppercase mb-6 border-b-4 border-black pb-2">
+          Features
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <FeatureCard
+            iconName="zap"
+            title="Lightning Fast"
+            description="Built for speed with optimized performance at every level."
+            variant="yellow"
+          />
+          <FeatureCard
+            iconName="rocket"
+            title="Easy Deploy"
+            description="One-click deployment to your favorite cloud platform."
+            variant="pink"
+          />
+          <FeatureCard
+            iconName="star"
+            title="Top Rated"
+            description="Loved by developers and designers worldwide."
+            variant="blue"
+          />
+        </div>
+      </section>
+
+      {/* Color Variants Showcase */}
+      <section className="max-w-6xl mx-auto mb-16">
+        <h2 className="text-3xl font-black uppercase mb-6 border-b-4 border-black pb-2">
+          Card Variants
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <YellowCard title="Yellow Card" iconName="star">
+            <p className="text-sm">Bright and attention-grabbing.</p>
+          </YellowCard>
+          <PinkCard title="Pink Card" iconName="star">
+            <p className="text-sm">Playful and energetic.</p>
+          </PinkCard>
+          <BlueCard title="Blue Card" iconName="star">
+            <p className="text-sm">Cool and refreshing.</p>
+          </BlueCard>
+          <GreenCard title="Green Card" iconName="star">
+            <p className="text-sm">Fresh and natural.</p>
+          </GreenCard>
+          <BrutalCard variant="orange" title="Orange Card" iconName="star">
+            <p className="text-sm">Warm and inviting.</p>
+          </BrutalCard>
+          <BrutalCard variant="purple" title="Purple Card" iconName="star">
+            <p className="text-sm">Creative and unique.</p>
+          </BrutalCard>
+        </div>
+      </section>
+
+      {/* Button Showcase */}
+      <section className="max-w-6xl mx-auto mb-16">
+        <h2 className="text-3xl font-black uppercase mb-6 border-b-4 border-black pb-2">
+          Button Variants
+        </h2>
+        <div className="flex flex-wrap gap-4 p-6 border-2 border-black bg-white shadow-brutal">
+          <YellowButton iconName="zap">Yellow</YellowButton>
+          <PinkButton iconName="star">Pink</PinkButton>
+          <BlueButton iconName="rocket">Blue</BlueButton>
+          <BrutalButton variant="green">Green</BrutalButton>
+          <BrutalButton variant="orange">Orange</BrutalButton>
+          <BrutalButton variant="purple">Purple</BrutalButton>
+          <BlackButton>Black</BlackButton>
+          <BrutalButton variant="white">White</BrutalButton>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="max-w-6xl mx-auto text-center py-8 border-t-4 border-black">
+        <p className="font-bold uppercase">
+          Built for Hackathons • Neo-Brutalism Design System
+        </p>
+      </footer>
+    </main>
   );
 }

@@ -1,0 +1,32 @@
+[
+    {
+        "id": "txn_001",
+        "userId": "usr_001",
+        "amount": 250.00,
+        "currency": "USD",
+        "status": "completed",
+        "type": "payment",
+        "description": "Premium subscription",
+        "createdAt": "2024-06-15T12:00:00Z"
+    },
+    {
+        "id": "txn_002",
+        "userId": "usr_002",
+        "amount": 75.50,
+        "currency": "USD",
+        "status": "pending",
+        "type": "refund",
+        "description": "Partial refund request",
+        "createdAt": "2024-06-14T09:30:00Z"
+    },
+    {
+        "id": "txn_003",
+        "userId": "usr_003",
+        "amount": 120.00,
+        "currency": "USD",
+        "status": "completed",
+        "type": "payment",
+        "description": "Team plan upgrade",
+        "createdAt": "2024-06-13T15:45:00Z"
+    }
+]

@@ -1,0 +1,38 @@
+[
+    {
+        "id": "usr_001",
+        "name": "Alex Johnson",
+        "email": "alex@example.com",
+        "role": "admin",
+        "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=Alex",
+        "createdAt": "2024-01-15T10:00:00Z",
+        "stats": {
+            "projects": 12,
+            "contributions": 156
+        }
+    },
+    {
+        "id": "usr_002",
+        "name": "Sam Rivera",
+        "email": "sam@example.com",
+        "role": "developer",
+        "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=Sam",
+        "createdAt": "2024-02-20T14:30:00Z",
+        "stats": {
+            "projects": 8,
+            "contributions": 89
+        }
+    },
+    {
+        "id": "usr_003",
+        "name": "Jordan Lee",
+        "email": "jordan@example.com",
+        "role": "designer",
+        "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=Jordan",
+        "createdAt": "2024-03-10T09:15:00Z",
+        "stats": {
+            "projects": 5,
+            "contributions": 42
+        }
+    }
+]
