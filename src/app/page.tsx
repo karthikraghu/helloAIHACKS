@@ -1,153 +1,127 @@
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import {
-  BrutalCard,
-  YellowCard,
-  PinkCard,
-  BlueCard,
-  GreenCard,
-  FeatureCard,
-  StatCard,
-  BrutalButton,
-  YellowButton,
-  PinkButton,
-  BlueButton,
-  BlackButton,
+    BrutalCard,
+    BlackButton,
+    YellowButton
 } from "@/components/ui";
+import { simulateMutation } from "@/_data/mockData";
+import { Lock, User, Users } from "lucide-react";
 
-export default function Home() {
-  return (
-    <main className="min-h-screen bg-brutal-cream p-8">
-      {/* Hero Section */}
-      <section className="max-w-6xl mx-auto mb-16">
-        <div className="border-2 border-black bg-brutal-yellow p-8 shadow-brutal-xl mb-8">
-          <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tight mb-4">
-            Neo-Brutalism
-          </h1>
-          <p className="text-xl md:text-2xl font-bold mb-6">
-            Bold. Unapologetic. Retro-futuristic design for the modern web.
-          </p>
-          <div className="flex flex-wrap gap-4">
-            <BlackButton iconName="rocket" size="lg">
-              Get Started
-            </BlackButton>
-            <BrutalButton variant="white" iconName="arrowRight" iconPosition="right">
-              Learn More
-            </BrutalButton>
-          </div>
+export default function LoginPage() {
+    const router = useRouter();
+    const [loading, setLoading] = useState(false);
+    const [email, setEmail] = useState("demo@example.com");
+    const [password, setPassword] = useState("password123");
+
+    async function handleLogin(e: React.FormEvent) {
+        e.preventDefault();
+        setLoading(true);
+
+        // FAKE AUTH (Happy Path)
+        await simulateMutation({ email, id: "usr_mock_001" }, 800);
+
+        setLoading(false);
+        router.push("/dashboard");
+    }
+
+    return (
+        <div className="min-h-screen grid grid-cols-1 lg:grid-cols-2 bg-brutal-cream">
+
+            {/* LEFT: Branding Section */}
+            <div className="hidden lg:flex flex-col justify-center items-center bg-brutal-yellow border-r-4 border-black p-12 relative overflow-hidden">
+                {/* Abstract shapes background */}
+                <div className="absolute top-10 left-10 w-32 h-32 bg-brutal-pink border-2 border-black shadow-brutal-xl"></div>
+                <div className="absolute bottom-20 right-20 w-48 h-48 bg-brutal-blue border-2 border-black rounded-full shadow-brutal-xl"></div>
+                <div className="absolute top-1/2 right-10 w-24 h-24 bg-brutal-purple border-2 border-black shadow-brutal-xl transform rotate-12"></div>
+
+                <div className="relative z-10 text-center">
+                    <div className="flex items-center justify-center gap-4 mb-6">
+                        <Users className="w-16 h-16" />
+                    </div>
+                    <h1 className="text-7xl font-black uppercase mb-4 tracking-tighter bg-white border-4 border-black inline-block px-6 py-2 shadow-brutal-xl">
+                        BOARDROOM
+                    </h1>
+                    <p className="text-2xl font-bold bg-black text-white inline-block px-4 py-2 mt-4">
+                        VALIDATE IDEAS WITH EXPERT PERSONAS
+                    </p>
+                    <p className="text-lg font-bold mt-6 max-w-md">
+                        Get feedback from 5 expert perspectives before you build.
+                    </p>
+                </div>
+            </div>
+
+            {/* RIGHT: Login Form */}
+            <div className="flex items-center justify-center p-8 lg:p-24 relative">
+                <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(#000_1px,transparent_1px)] [background-size:16px_16px] opacity-10 pointer-events-none"></div>
+
+                <BrutalCard className="w-full max-w-md bg-white relative z-20" variant="default">
+                    <div className="mb-8 text-center">
+                        <div className="lg:hidden flex items-center justify-center gap-2 mb-4">
+                            <Users className="w-8 h-8" />
+                            <span className="text-2xl font-black uppercase">Boardroom</span>
+                        </div>
+                        <h2 className="text-4xl font-black uppercase mb-2">Welcome</h2>
+                        <p className="font-bold text-gray-500">Sign in to validate your ideas</p>
+                    </div>
+
+                    <form onSubmit={handleLogin} className="space-y-6">
+                        <div className="space-y-2">
+                            <label className="font-bold uppercase text-sm flex items-center gap-2">
+                                <User className="w-4 h-4" /> Email
+                            </label>
+                            <input
+                                type="email"
+                                required
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                className="w-full p-3 font-bold bg-gray-50 focus:bg-white transition-colors"
+                                placeholder="you@example.com"
+                            />
+                        </div>
+
+                        <div className="space-y-2">
+                            <label className="font-bold uppercase text-sm flex items-center gap-2">
+                                <Lock className="w-4 h-4" /> Password
+                            </label>
+                            <input
+                                type="password"
+                                required
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                className="w-full p-3 font-bold bg-gray-50 focus:bg-white transition-colors"
+                                placeholder="••••••••"
+                            />
+                        </div>
+
+                        <BlackButton
+                            type="submit"
+                            fullWidth
+                            size="lg"
+                            loading={loading}
+                            iconName="arrowRight"
+                            iconPosition="right"
+                            className="mt-4"
+                        >
+                            Enter Boardroom
+                        </BlackButton>
+                    </form>
+
+                    <div className="mt-8 pt-6 border-t-2 border-dashed border-gray-300">
+                        <p className="text-center font-bold text-sm mb-4 uppercase text-gray-400">Or continue with</p>
+                        <div className="grid grid-cols-2 gap-4">
+                            <YellowButton className="justify-center" size="sm">
+                                Github
+                            </YellowButton>
+                            <YellowButton className="justify-center" size="sm">
+                                Google
+                            </YellowButton>
+                        </div>
+                    </div>
+                </BrutalCard>
+            </div>
         </div>
-      </section>
-
-      {/* Stats Section */}
-      <section className="max-w-6xl mx-auto mb-16">
-        <h2 className="text-3xl font-black uppercase mb-6 border-b-4 border-black pb-2">
-          Dashboard Stats
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <StatCard
-            value="2,847"
-            label="Total Users"
-            iconName="users"
-            variant="yellow"
-            trend={{ value: 12.5, isPositive: true }}
-          />
-          <StatCard
-            value="$45.2K"
-            label="Revenue"
-            iconName="trendingUp"
-            variant="pink"
-            trend={{ value: 8.2, isPositive: true }}
-          />
-          <StatCard
-            value="156"
-            label="Active Projects"
-            iconName="star"
-            variant="blue"
-          />
-          <StatCard
-            value="99.9%"
-            label="Uptime"
-            iconName="zap"
-            variant="green"
-          />
-        </div>
-      </section>
-
-      {/* Feature Cards */}
-      <section className="max-w-6xl mx-auto mb-16">
-        <h2 className="text-3xl font-black uppercase mb-6 border-b-4 border-black pb-2">
-          Features
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <FeatureCard
-            iconName="zap"
-            title="Lightning Fast"
-            description="Built for speed with optimized performance at every level."
-            variant="yellow"
-          />
-          <FeatureCard
-            iconName="rocket"
-            title="Easy Deploy"
-            description="One-click deployment to your favorite cloud platform."
-            variant="pink"
-          />
-          <FeatureCard
-            iconName="star"
-            title="Top Rated"
-            description="Loved by developers and designers worldwide."
-            variant="blue"
-          />
-        </div>
-      </section>
-
-      {/* Color Variants Showcase */}
-      <section className="max-w-6xl mx-auto mb-16">
-        <h2 className="text-3xl font-black uppercase mb-6 border-b-4 border-black pb-2">
-          Card Variants
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <YellowCard title="Yellow Card" iconName="star">
-            <p className="text-sm">Bright and attention-grabbing.</p>
-          </YellowCard>
-          <PinkCard title="Pink Card" iconName="star">
-            <p className="text-sm">Playful and energetic.</p>
-          </PinkCard>
-          <BlueCard title="Blue Card" iconName="star">
-            <p className="text-sm">Cool and refreshing.</p>
-          </BlueCard>
-          <GreenCard title="Green Card" iconName="star">
-            <p className="text-sm">Fresh and natural.</p>
-          </GreenCard>
-          <BrutalCard variant="orange" title="Orange Card" iconName="star">
-            <p className="text-sm">Warm and inviting.</p>
-          </BrutalCard>
-          <BrutalCard variant="purple" title="Purple Card" iconName="star">
-            <p className="text-sm">Creative and unique.</p>
-          </BrutalCard>
-        </div>
-      </section>
-
-      {/* Button Showcase */}
-      <section className="max-w-6xl mx-auto mb-16">
-        <h2 className="text-3xl font-black uppercase mb-6 border-b-4 border-black pb-2">
-          Button Variants
-        </h2>
-        <div className="flex flex-wrap gap-4 p-6 border-2 border-black bg-white shadow-brutal">
-          <YellowButton iconName="zap">Yellow</YellowButton>
-          <PinkButton iconName="star">Pink</PinkButton>
-          <BlueButton iconName="rocket">Blue</BlueButton>
-          <BrutalButton variant="green">Green</BrutalButton>
-          <BrutalButton variant="orange">Orange</BrutalButton>
-          <BrutalButton variant="purple">Purple</BrutalButton>
-          <BlackButton>Black</BlackButton>
-          <BrutalButton variant="white">White</BrutalButton>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="max-w-6xl mx-auto text-center py-8 border-t-4 border-black">
-        <p className="font-bold uppercase">
-          Built for Hackathons • Neo-Brutalism Design System
-        </p>
-      </footer>
-    </main>
-  );
+    );
 }
