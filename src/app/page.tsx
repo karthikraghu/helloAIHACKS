@@ -7,7 +7,7 @@ import {
     BlackButton,
     YellowButton
 } from "@/components/ui";
-import { simulateMutation } from "@/_data/mockData";
+
 import { Lock, User, Users } from "lucide-react";
 
 export default function LoginPage() {
@@ -20,8 +20,8 @@ export default function LoginPage() {
         e.preventDefault();
         setLoading(true);
 
-        // FAKE AUTH (Happy Path)
-        await simulateMutation({ email, id: "usr_mock_001" }, 800);
+        // Fake login delay
+        await new Promise(resolve => setTimeout(resolve, 800));
 
         setLoading(false);
         router.push("/dashboard");
