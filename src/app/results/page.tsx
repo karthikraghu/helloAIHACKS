@@ -91,26 +91,49 @@ function ResultsContent() {
         setPersonaIds(ids);
         setActiveTab(ids[0]);
 
-        // Initialize all responses as loading
+        // Initialize responses
         const initialResponses: Record<string, PersonaResponse> = {};
+
+        // Check cache first
         ids.forEach(id => {
-            initialResponses[id] = {
-                personaId: id,
-                success: false,
-                error: null,
-                response: null,
-                scores: [],
-                verdict: null,
-                loading: true,
-            };
+            const cacheKey = `boardroom_result_${encodeURIComponent(ideaParam)}_${id}`;
+            const cachedParams = sessionStorage.getItem(cacheKey);
+
+            if (cachedParams) {
+                try {
+                    initialResponses[id] = JSON.parse(cachedParams);
+                    // Ensure loading is false for cached items
+                    initialResponses[id].loading = false;
+                } catch {
+                    // Fallback if cache is corrupt
+                    initialResponses[id] = createLoadingResponse(id);
+                }
+            } else {
+                initialResponses[id] = createLoadingResponse(id);
+            }
         });
+
         setResponses(initialResponses);
 
-        // Fetch each persona individually (each uses its own API key)
+        // Fetch missing personas
         ids.forEach(personaId => {
-            fetchPersonaResponse(ideaParam, personaId);
+            if (initialResponses[personaId].loading) {
+                fetchPersonaResponse(ideaParam, personaId);
+            }
         });
     }, [searchParams]);
+
+    function createLoadingResponse(id: string): PersonaResponse {
+        return {
+            personaId: id,
+            success: false,
+            error: null,
+            response: null,
+            scores: [],
+            verdict: null,
+            loading: true,
+        };
+    }
 
     async function fetchPersonaResponse(ideaText: string, personaId: string) {
         try {
@@ -122,20 +145,26 @@ function ResultsContent() {
 
             const data = await response.json();
 
-            setResponses(prev => ({
-                ...prev,
-                [personaId]: {
-                    personaId,
-                    success: data.success ?? false,
-                    error: data.error || null,
-                    response: data.response || null,
-                    scores: data.scores || [],
-                    verdict: data.verdict || null,
-                    goVerdict: data.goVerdict,
-                    noGoVerdict: data.noGoVerdict,
-                    loading: false,
-                }
-            }));
+            const result: PersonaResponse = {
+                personaId,
+                success: data.success ?? false,
+                error: data.error || null,
+                response: data.response || null,
+                scores: data.scores || [],
+                verdict: data.verdict || null,
+                goVerdict: data.goVerdict,
+                noGoVerdict: data.noGoVerdict,
+                loading: false,
+            };
+
+            setResponses(prev => ({ ...prev, [personaId]: result }));
+
+            // Save to cache
+            if (result.success) {
+                const cacheKey = `boardroom_result_${encodeURIComponent(ideaText)}_${personaId}`;
+                sessionStorage.setItem(cacheKey, JSON.stringify(result));
+            }
+
         } catch {
             setResponses(prev => ({
                 ...prev,
@@ -153,6 +182,10 @@ function ResultsContent() {
     }
 
     function retryPersona(personaId: string) {
+        // Clear cache for this persona
+        const cacheKey = `boardroom_result_${encodeURIComponent(idea)}_${personaId}`;
+        sessionStorage.removeItem(cacheKey);
+
         setResponses(prev => ({
             ...prev,
             [personaId]: {
@@ -166,6 +199,10 @@ function ResultsContent() {
 
     function retryAll() {
         personaIds.forEach(id => {
+            // Clear cache
+            const cacheKey = `boardroom_result_${encodeURIComponent(idea)}_${id}`;
+            sessionStorage.removeItem(cacheKey);
+
             setResponses(prev => ({
                 ...prev,
                 [id]: {
