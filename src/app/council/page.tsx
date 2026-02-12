@@ -144,35 +144,40 @@ function CouncilContent() {
                         <div className="space-y-6">
                             {messages.map((msg, idx) => {
                                 const persona = getPersona(msg.speaker);
-                                const isUser = msg.speaker === "user"; // if we add user input later
-                                const isChairman = msg.speaker === "chairman"; // unlikely in current stream logic but possible
+                                const isVerdict = msg.speaker === "verdict";
+                                const isUser = msg.speaker === "user";
 
                                 return (
-                                    <div key={idx} className={`flex gap-4 ${isUser ? "flex-row-reverse" : ""}`}>
+                                    <div key={idx} className={`flex gap-4 ${isUser ? "flex-row-reverse" : ""} ${isVerdict ? "justify-center" : ""}`}>
                                         {/* Avatar */}
-                                        <div className={`
-                                            w-12 h-12 shrink-0 border-2 border-black flex items-center justify-center
-                                            ${persona ? persona.color : "bg-gray-200"}
-                                            shadow-brutal-sm
-                                        `}>
-                                            {persona ? (
-                                                <span className="font-black text-lg">{persona.name[0]}</span>
-                                            ) : (
-                                                <Users className="w-6 h-6" />
-                                            )}
-                                        </div>
+                                        {!isVerdict && (
+                                            <div className={`
+                                                w-12 h-12 shrink-0 border-2 border-black flex items-center justify-center
+                                                ${persona ? persona.color : "bg-gray-200"}
+                                                shadow-brutal-sm
+                                            `}>
+                                                {persona ? (
+                                                    <span className="font-black text-lg">{persona.name[0]}</span>
+                                                ) : (
+                                                    <Users className="w-6 h-6" />
+                                                )}
+                                            </div>
+                                        )}
 
                                         {/* Message Bubble */}
-                                        <div className="max-w-2xl">
+                                        <div className={isVerdict ? "w-full max-w-3xl" : "max-w-2xl"}>
                                             <div className="flex items-center gap-2 mb-1">
                                                 <span className="font-black uppercase text-sm">
-                                                    {persona?.name || msg.speaker}
+                                                    {isVerdict ? "The Council Verdict" : (persona?.name || msg.speaker)}
                                                 </span>
                                                 <span className="text-xs font-bold text-gray-500 uppercase">
-                                                    {persona?.role || "Moderator"}
+                                                    {isVerdict ? "Final Decision" : (persona?.role || "Moderator")}
                                                 </span>
                                             </div>
-                                            <div className="bg-gray-50 border-2 border-black p-4 shadow-sm text-sm md:text-base font-medium leading-relaxed whitespace-pre-wrap">
+                                            <div className={`
+                                                border-2 border-black p-4 shadow-sm text-sm md:text-base font-medium leading-relaxed whitespace-pre-wrap
+                                                ${isVerdict ? "bg-brutal-yellow border-4 border-dashed animate-in fade-in slide-in-from-bottom-4 duration-1000" : "bg-gray-50"}
+                                            `}>
                                                 {msg.text}
                                             </div>
                                         </div>

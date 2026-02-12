@@ -56,7 +56,7 @@ async function supervisorNode(state: BoardroomState) {
     // If we have reached the round limit, end the discussion
     // Assuming 2 rounds per persona roughly
     if (round_count > 10) {
-        return { next_speaker: "FINISH" };
+        return { next_speaker: "VERDICT" }; // Route to final verdict
     }
 
     const systemPrompt = `You are The Chairman of the Board.
@@ -74,36 +74,65 @@ Your goal is to foster a productive debate.
 1. If a persona raised a critical point, ask another relevant persona to respond.
 2. Ensure everyone gets a chance to speak.
 3. If the discussion is going in circles, steer it to a new topic.
-4. If the debate has reached a natural conclusion, output "FINISH".
+4. If the debate has reached a natural conclusion or consensus, output "VERDICT".
 
-Who should speak next? Return ONLY one of: "vc", "angel", "customer", "growth", "risk", or "FINISH".`;
+Who should speak next? Return ONLY one of: "vc", "angel", "customer", "growth", "risk", or "VERDICT".`;
 
     const response = await chairmanModel.invoke([
         new SystemMessage(systemPrompt),
-        // We pass the last message as a "trigger" for the chairman to react to
         new HumanMessage("Who speaks next?"),
     ]);
 
     const rawDecision = response.content.toString().trim().toLowerCase();
 
-    // Clean up potential extra text
-    let nextSpeaker = "FINISH";
+    let nextSpeaker = "VERDICT";
     if (rawDecision.includes("vc")) nextSpeaker = "vc";
     else if (rawDecision.includes("angel")) nextSpeaker = "angel";
     else if (rawDecision.includes("customer")) nextSpeaker = "customer";
     else if (rawDecision.includes("growth")) nextSpeaker = "growth";
     else if (rawDecision.includes("risk")) nextSpeaker = "risk";
-    else if (rawDecision.includes("finish")) nextSpeaker = "FINISH";
+    else if (rawDecision.includes("verdict")) nextSpeaker = "VERDICT";
 
     return { next_speaker: nextSpeaker };
 }
 
-// personaNode: Generates the persona's response
+// verdictNode: Synthesizes the final decision
+async function verdictNode(state: BoardroomState) {
+    const { messages } = state;
+
+    const context = messages.map(m => `${m.name || m.getType()}: ${m.content}`).join("\n");
+
+    const systemPrompt = `You are the Executive Secretary of the Council. 
+Based on the debate between the VC, Angel, Customer, Growth, and Risk personas, provide a FINAL BOARDROOM VERDICT.
+
+STRUCTURE:
+1. **SUMMARY**: A 1-sentence summary of the council's vibe.
+2. **KEY TENSION**: What was the main point of disagreement?
+3. **DECISION**: Provide a final "COMMIT" or "PIVOT" or "ABANDON" recommendation.
+4. **WHY**: 3 bullet points justifying the decision based on the team's input.
+
+Be authoritative, professional, and definitive. Use Markdown formatting.`;
+
+    const response = await chairmanModel.invoke([
+        new SystemMessage(systemPrompt),
+        new HumanMessage(`Finalize the verdict for this debate:\n\n${context}`),
+    ]);
+
+    const taggedMessage = new AIMessage({
+        content: response.content,
+        name: "verdict"
+    });
+
+    return {
+        messages: [taggedMessage]
+    };
+}
+// ... (personaNode remain the same)
 async function personaNode(state: BoardroomState, personaId: string, systemPrompt: string) {
     const { messages } = state;
     const model = getPersonaModel(personaId);
 
-    // Filter recent messages for context (last 10 to avoid token limits if history grows)
+    // Filter recent messages for context
     const recentContext = messages.slice(-10);
 
     const response = await model.invoke([
@@ -147,12 +176,13 @@ const workflow = new StateGraph<BoardroomState>({
             default: () => "chairman",
         },
         round_count: {
-            reducer: (a: number, b: number) => b, // Replace with new count
+            reducer: (a: number, b: number) => b,
             default: () => 0,
         }
     }
 })
     .addNode("chairman", supervisorNode)
+    .addNode("verdict", verdictNode)
     .addNode("vc", vcNode)
     .addNode("angel", angelNode)
     .addNode("customer", customerNode)
@@ -166,13 +196,14 @@ const workflow = new StateGraph<BoardroomState>({
         customer: "customer",
         growth: "growth",
         risk: "risk",
-        FINISH: END
+        VERDICT: "verdict"
     })
     .addEdge("vc", "chairman")
     .addEdge("angel", "chairman")
     .addEdge("customer", "chairman")
     .addEdge("growth", "chairman")
-    .addEdge("risk", "chairman");
+    .addEdge("risk", "chairman")
+    .addEdge("verdict", END);
 
 // Use Memory Checkpointer for now
 const checkpointer = new MemorySaver();
@@ -209,32 +240,28 @@ export async function POST(req: NextRequest) {
 
         const readableStream = new ReadableStream({
             async start(controller) {
-                for await (const chunk of stream) {
-                    // chunk is an object like { vc: { messages: [...] } }
-                    // We need to verify what actually comes back.
-                    // For "updates", it returns the state update from the node.
+                try {
+                    for await (const chunk of stream as any) {
+                        const nodeName = Object.keys(chunk)[0];
+                        const nodeUpdate = (chunk as any)[nodeName];
 
-                    const nodeName = Object.keys(chunk)[0];
-                    const nodeUpdate = chunk[nodeName];
-
-                    if (nodeName === "chairman") {
-                        // Supervisor just decided next speaker, maybe stream a status update?
-                        // controller.enqueue(encoder.encode(`event: status\ndata: Chairman decided: ${nodeUpdate.next_speaker}\n\n`));
-                    } else {
-                        // Persona spoke
-                        const messages = nodeUpdate.messages;
-                        if (messages && messages.length > 0) {
-                            const lastMsg = messages[messages.length - 1];
+                        // Skip chairman's internal decisions, only stream persona/verdict speech
+                        if (nodeName !== "chairman" && nodeUpdate.messages) {
+                            const lastMsg = nodeUpdate.messages[nodeUpdate.messages.length - 1];
                             const payload = JSON.stringify({
-                                speaker: nodeName, // "vc", "risk", etc.
+                                speaker: nodeName,
                                 text: lastMsg.content,
                                 threadId: effectiveThreadId
                             });
                             controller.enqueue(encoder.encode(`${payload}\n`));
                         }
                     }
+                } catch (err: any) {
+                    console.error("STREAM ERROR:", err);
+                    controller.enqueue(encoder.encode(JSON.stringify({ error: err.message })));
+                } finally {
+                    controller.close();
                 }
-                controller.close();
             }
         });
 
@@ -243,7 +270,7 @@ export async function POST(req: NextRequest) {
         });
 
     } catch (e: any) {
-        console.error("COUNCIL API ERROR:", e); // Log the actual error
+        console.error("COUNCIL API ERROR:", e);
         return NextResponse.json({ error: e.message, stack: e.stack }, { status: 500 });
     }
 }
