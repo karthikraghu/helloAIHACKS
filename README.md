@@ -17,6 +17,22 @@ Boardroom lets you validate your startup ideas by getting feedback from 5 AI-pow
 ### Results — AI Analysis
 ![Results](/public/screenshot-results.png)
 
+### The Council Chamber — Multi-Agent Debate
+![Council Chamber](/public/council-chamber.png)
+
+---
+
+## 🏗️ Architecture: Centralized Orchestration
+
+We use a **Supervisor (Chairman)** agent to manage the flow of conversation between 5 distinct **Subagents (Personas)**. This pattern ensures the debate stays focused and productive.
+
+![Agent Architecture](/public/agent-architecture.png)
+
+*   **User Request:** The initial startup idea.
+*   **Main Agent (Chairman):** Decides who speaks next based on the conversation context.
+*   **Subagents:** Specialist personas (VC, Risk, etc.) who provide expert input when called.
+*   **Final Response:** The Chairman triggers a "Verdict Node" to synthesize the discussion into a final decision.
+
 ---
 
 ## 🚀 How It Works

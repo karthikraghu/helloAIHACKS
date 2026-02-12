@@ -219,7 +219,15 @@ function ResultsContent() {
         return personaConfigs.find(p => p.id === personaId);
     }
 
-    function formatMarkdown(text: string): string {
+    function formatMarkdown(text: string | any): string {
+        if (typeof text !== 'string') {
+            console.warn("formatMarkdown received non-string:", text);
+            if (typeof text === 'object' && text !== null) {
+                return JSON.stringify(text); // Fallback for objects
+            }
+            return String(text || "");
+        }
+
         return text
             .replace(/\*\*(.*?)\*\*/g, '<strong class="text-black">$1</strong>')
             .replace(/\*(.*?)\*/g, '<em>$1</em>')

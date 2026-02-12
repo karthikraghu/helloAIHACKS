@@ -25,7 +25,7 @@ interface BoardroomState {
 // 3. Define the Supervisor (Chairman) Model
 const chairmanModel = new ChatGroq({
     apiKey: process.env.GROQ_API_KEY || "dummy_key", // Prevent crash on init, will fail on invoke if invalid
-    model: "llama-3.3-70b-versatile",
+    model: "qwen/qwen3-32b",
     temperature: 0.5,
 });
 
