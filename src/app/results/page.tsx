@@ -255,6 +255,15 @@ function ResultsContent() {
                             <ThumbsDown className="w-4 h-4" /> {noGoCount}
                         </span>
                     </div>
+                    {completedCount === totalCount && totalCount > 0 && (
+                        <button
+                            onClick={() => router.push(`/council?idea=${encodeURIComponent(idea)}&personas=${personaIds.join(",")}`)}
+                            className="flex items-center gap-2 px-4 py-2 bg-brutal-purple text-white border-2 border-black shadow-brutal-sm font-bold uppercase hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all animate-pulse"
+                        >
+                            <Users className="w-4 h-4" />
+                            Take me to a Council
+                        </button>
+                    )}
                     <button
                         onClick={retryAll}
                         className="flex items-center gap-2 px-4 py-2 bg-white border-2 border-black shadow-brutal-sm font-bold uppercase hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all"
